@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Dashboard — Login / Register</title>
+    <meta name="description" content="Responsive admin dashboard with animated login and registration pages (demo, client-side only)">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+            --bg:#0f1724;
+            --card:#0b1220;
+            --muted:#9aa7bf;
+            --accent:#6C8CFF;
+            --accent-2:#7BE2C7;
+            --glass: rgba(255,255,255,0.04);
+            --success:#2dd4bf;
+            --danger:#ff6b6b;
+            --radius:12px;
+            --ease:cubic-bezier(.2,.9,.2,1);
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            color-scheme: dark;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0;
+            background:
+                radial-gradient(800px 400px at 10% 10%, rgba(108,140,255,0.07), transparent 6%),
+                radial-gradient(600px 300px at 90% 90%, rgba(123,226,199,0.04), transparent 6%),
+                var(--bg);
+            color:#e6eef8;
+            font-size:16px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:28px;
+        }
+
+        /* Container */
+        .wrap{
+            width:1100px;
+            max-width:1100px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius:18px;
+            box-shadow: 0 10px 30px rgba(2,6,23,0.7);
+            overflow:hidden;
+            display:grid;
+            grid-template-columns:420px 1fr;
+            min-height:640px;
+            transition:all 400ms var(--ease);
+        }
+
+        /* Left panel - auth */
+        .auth-panel{
+            padding:38px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
+            display:flex;
+            flex-direction:column;
+            gap:18px;
+            position:relative;
+            min-height:640px;
+        }
+
+        .brand{
+            display:flex;
+            gap:12px;
+            align-items:center;
+        }
+        .logo{
+            width:46px;height:46px;border-radius:10px;
+            background:linear-gradient(135deg,var(--accent),var(--accent-2));
+            display:grid;place-items:center;color:#071233;font-weight:700;
+            box-shadow:0 6px 20px rgba(108,140,255,0.12), inset 0 -6px 18px rgba(0,0,0,0.12);
+            font-size:18px;
+        }
+        .brand h1{margin:0;font-size:18px;letter-spacing:0.2px}
+        .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+        .auth-card{
+            margin-top:6px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.008));
+            border-radius:12px;
+            padding:22px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .switcher{
+            display:flex;
+            gap:8px;
+            align-items:center;
+        }
+        .tab{
+            background:transparent;
+            border:0;
+            padding:8px 12px;
+            color:var(--muted);
+            font-weight:600;
+            border-radius:10px;
+            cursor:pointer;
+            transition:all 220ms var(--ease);
+            transform:translateY(0);
+        }
+        .tab.active{
+            background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            color:white;
+            box-shadow:0 6px 18px rgba(2,6,23,0.45);
+            transform:translateY(-2px);
+        }
+
+        form{
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+            margin-top:8px;
+            transition:transform 350ms var(--ease),opacity 350ms var(--ease);
+        }
+
+        .field{
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+        .label{font-size:13px;color:var(--muted)}
+        .input{
+            background:var(--glass);
+            border:1px solid rgba(255,255,255,0.03);
+            padding:12px 14px;
+            border-radius:10px;
+            color:inherit;
+            outline:none;
+            transition:box-shadow 220ms var(--ease), transform 220ms var(--ease);
+        }
+        .input:focus{
+            box-shadow:0 6px 20px rgba(108,140,255,0.08);
+            transform:translateY(-2px);
+            border-color: rgba(108,140,255,0.16);
+        }
+        .actions{display:flex;gap:8px;align-items:center;justify-content:space-between}
+        .btn{
+            background:linear-gradient(90deg,var(--accent),var(--accent-2));
+            border:0;padding:10px 14px;border-radius:10px;color:#071233;font-weight:700;
+            cursor:pointer;box-shadow:0 8px 30px rgba(108,140,255,0.12);
+            transition:transform 180ms var(--ease),filter 180ms var(--ease);
+        }
+        .btn:active{transform:translateY(1px)}
+        .ghost{
+            background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);font-weight:600;padding:10px 12px;border-radius:10px;
+        }
+        .muted{color:var(--muted);font-size:13px}
+        .note{font-size:13px;color:var(--muted);margin-top:6px}
+
+        /* Right panel - dashboard preview */
+        .preview{
+            padding:28px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.006));
+            display:flex;
+            flex-direction:column;
+            gap:18px;
+            min-height:640px;
+        }
+
+        .top{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+        .stat-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:14px;
+            margin-top:2px;
+        }
+        .stat{
+            background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            padding:16px;border-radius:12px;
+            display:flex;flex-direction:column;gap:8px;
+            transition:transform 300ms var(--ease),box-shadow 300ms var(--ease);
+        }
+        .stat:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(2,6,23,0.55)}
+        .stat .num{font-size:20px;font-weight:700}
+        .stat .label{font-size:13px;color:var(--muted)}
+
+        .cards{
+            margin-top:14px;
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:14px;
+            align-items:start;
+        }
+        .card{
+            background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.008));
+            padding:18px;border-radius:12px;
+            min-height:140px;
+            display:flex;flex-direction:column;gap:10px;
+        }
+        .nav{
+            display:flex;flex-direction:column;gap:8px;margin-top:6px;
+        }
+        .nav a{
+            color:var(--muted);text-decoration:none;padding:10px;border-radius:10px;
+            display:flex;gap:10px;align-items:center;font-weight:600;
+        }
+        .nav a:hover{background:rgba(255,255,255,0.02);color:white}
+
+        /* Tiny helper */
+        .hidden{display:none;opacity:0;transform:translateY(8px)}
+        .visible{display:flex;opacity:1;transform:none}
+
+        /* Dashboard main area shown after login */
+        .dashboard{
+            position:absolute;inset:0;background:linear-gradient(180deg, rgba(2,6,23,0.55), rgba(2,6,23,0.75));
+            display:flex;flex-direction:column;gap:18px;padding:28px;z-index:50;
+            opacity:0;pointer-events:none;transform:scale(.98);
+            transition:opacity 360ms var(--ease),transform 360ms var(--ease);
+        }
+        .dashboard.show{opacity:1;pointer-events:auto;transform:scale(1)}
+        .dash-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+        .dash-title{font-size:20px;font-weight:700}
+        .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:10px}
+        .mini{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:12px;border-radius:10px}
+
+        /* Small screens */
+        @media (max-width:980px){
+            .wrap{grid-template-columns:1fr;max-width:900px}
+            .auth-panel{padding:20px}
+            .preview{padding:18px;order:2}
+            .auth-panel{order:1}
+            .stat-grid{grid-template-columns:repeat(2,1fr)}
+            .cards{grid-template-columns:1fr}
+            .dash-grid{grid-template-columns:repeat(2,1fr)}
+            body{padding:16px}
+        }
+        @media (max-width:520px){
+            .wrap{min-height:720px;width:100%}
+            .auth-card{padding:16px}
+            .brand h1{font-size:16px}
+            .tab{padding:8px 10px}
+            .stat-grid{grid-template-columns:1fr}
+            .dash-grid{grid-template-columns:1fr}
+        }
+
+        /* subtle entrance animations */
+        .fade-in{animation:fadeIn 600ms var(--ease) both}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+        /* tiny helper messages */
+        .msg{
+            padding:10px 12px;border-radius:10px;font-size:13px;margin-top:6px;
+        }
+        .msg.ok{background:linear-gradient(90deg, rgba(45,212,191,0.08), rgba(45,212,191,0.02));color:var(--success)}
+        .msg.err{background:linear-gradient(90deg, rgba(255,107,107,0.06), rgba(255,107,107,0.02));color:var(--danger)}
+    </style>
+</head>
+<body>
+    <div class="wrap fade-in" id="app">
+        <div class="auth-panel">
+            <div class="brand">
+                <div class="logo">AD</div>
+                <div>
+                    <h1>AdminKit</h1>
+                    <p>Smooth, responsive admin template (demo)</p>
+                </div>
+            </div>
+
+            <div class="auth-card">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div class="switcher" role="tablist" aria-label="Authentication">
+                        <button class="tab active" data-view="admin-login">Admin Login</button>
+                        <button class="tab" data-view="user-login">User Login</button>
+                        <button class="tab" data-view="register">Register</button>
+                    </div>
+                    <div class="muted">Demo only · client-side</div>
+                </div>
+
+                <!-- Admin Login -->
+                <form id="admin-login" class="view">
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <input class="input" type="email" id="adminEmail" placeholder="admin@example.com" required>
+                    </div>
+                    <div class="field">
+                        <label class="label">Password</label>
+                        <input class="input" type="password" id="adminPass" placeholder="Enter admin password" required>
+                    </div>
+                    <div class="actions">
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)">
+                                <input type="checkbox" id="rememberAdmin" style="width:16px;height:16px">
+                                Remember
+                            </label>
+                        </div>
+                        <button type="button" class="ghost" id="demoAdminCreds">Demo creds</button>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+                        <button type="submit" class="btn">Sign in as Admin</button>
+                        <button type="button" class="ghost" id="toUserLogin">Sign in as User</button>
+                    </div>
+                    <div id="adminMsg" class="note muted">Use demo admin credentials to enter dashboard.</div>
+                </form>
+
+                <!-- User Login -->
+                <form id="user-login" class="view hidden" novalidate>
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <input class="input" type="email" id="userEmail" placeholder="you@domain.com" required>
+                    </div>
+                    <div class="field">
+                        <label class="label">Password</label>
+                        <input class="input" type="password" id="userPass" placeholder="Choose your password" required>
+                    </div>
+                    <div class="actions">
+                        <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)">
+                            <input type="checkbox" id="rememberUser" style="width:16px;height:16px">
+                            Remember
+                        </label>
+                        <a href="#" id="forgot" class="muted" onclick="event.preventDefault()">Forgot?</a>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+                        <button type="submit" class="btn">Sign in</button>
+                        <button type="button" class="ghost" id="toRegister">Create Account</button>
+                    </div>
+                    <div id="userMsg" class="note muted">Register new users with the Register tab.</div>
+                </form>
+
+                <!-- Register -->
+                <form id="register" class="view hidden" novalidate>
+                    <div class="field">
+                        <label class="label">Full name</label>
+                        <input class="input" type="text" id="regName" placeholder="Your full name" required>
+                    </div>
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <input class="input" type="email" id="regEmail" placeholder="you@domain.com" required>
+                    </div>
+                    <div class="field">
+                        <label class="label">Password</label>
+                        <input class="input" type="password" id="regPass" placeholder="Create a password" required>
+                    </div>
+                    <div class="field">
+                        <label class="label">Role</label>
+                        <select class="input" id="regRole">
+                            <option value="user">User</option>
+                            <option value="editor">Editor</option>
+                            <option value="manager">Manager</option>
+                        </select>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+                        <button type="submit" class="btn">Create account</button>
+                        <button type="button" class="ghost" id="backToLogin">Back to Login</button>
+                    </div>
+                    <div id="regMsg" class="note muted">Accounts are stored locally for demo purposes.</div>
+                </form>
+
+            </div>
+            <div style="margin-top:12px;color:var(--muted);font-size:13px">
+                © <span id="year"></span> AdminKit — smooth UI demo
+            </div>
+        </div>
+
+        <div class="preview">
+            <div class="top">
+                <div>
+                    <div style="font-size:13px;color:var(--muted)">Welcome to the preview</div>
+                    <h2 style="margin:6px 0 0 0">Analytics Overview</h2>
+                </div>
+                <div style="display:flex;gap:12px;align-items:center">
+                    <div style="text-align:right">
+                        <div class="muted" style="font-size:13px">Active users</div>
+                        <div style="font-weight:700;font-size:18px">1,248</div>
+                    </div>
+                    <div style="width:10px"></div>
+                </div>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div class="num">1248</div>
+                        <div class="muted">Users</div>
+                    </div>
+                    <div class="label">Active in last 24h</div>
+                </div>
+                <div class="stat">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div class="num">32</div>
+                        <div class="muted">New</div>
+                    </div>
+                    <div class="label">Registrations</div>
+                </div>
+                <div class="stat">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div class="num">3.4k</div>
+                        <div class="muted">Requests</div>
+                    </div>
+                    <div class="label">API calls</div>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card">
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                        <div style="font-weight:700">Quick Actions</div>
+                        <div class="muted">Shortcuts</div>
+                    </div>
+                    <div class="nav">
+                        <a href="#" onclick="event.preventDefault()">Create user</a>
+                        <a href="#" onclick="event.preventDefault()">Invite team</a>
+                        <a href="#" onclick="event.preventDefault()">View logs</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="font-weight:700">Activity</div>
+                    <div class="muted">Recent events</div>
+                    <div style="margin-top:auto" class="muted">No live connection in demo</div>
+                </div>
+            </div>
+
+            <!-- Dashboard overlay that appears after admin login -->
+            <div id="dashboard" class="dashboard" aria-hidden="true">
+                <div class="dash-top">
+                    <div>
+                        <div class="dash-title">Admin Dashboard</div>
+                        <div class="muted" id="dashSub">Welcome back, Admin</div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <button class="ghost" id="logout">Logout</button>
+                        <button class="btn" id="profileBtn">Profile</button>
+                    </div>
+                </div>
+
+                <div class="dash-grid">
+                    <div class="mini">Total users <div style="font-weight:700;margin-top:6px">1,248</div></div>
+                    <div class="mini">Active sessions <div style="font-weight:700;margin-top:6px">78</div></div>
+                    <div class="mini">Errors <div style="font-weight:700;margin-top:6px">2</div></div>
+                    <div class="mini">Uptime <div style="font-weight:700;margin-top:6px">99.98%</div></div>
+                </div>
+
+                <div style="margin-top:auto;display:flex;justify-content:flex-end;gap:8px">
+                    <div class="muted">Powered by local demo</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // GitHub Copilot — client-side demo authentication and UI control
+        (function(){
+            // Elements
+            const tabs = document.querySelectorAll('.tab');
+            const views = document.querySelectorAll('.view');
+            const app = document.getElementById('app');
+            const year = document.getElementById('year');
+            const dashboard = document.getElementById('dashboard');
+
+            year.textContent = new Date().getFullYear();
+
+            function showView(name){
+                views.forEach(v=>{
+                    if(v.id === name) {
+                        v.classList.remove('hidden');
+                        v.classList.add('visible');
+                    } else {
+                        v.classList.remove('visible');
+                        v.classList.add('hidden');
+                    }
+                });
+                tabs.forEach(t=>t.classList.toggle('active', t.dataset.view===name));
+            }
+
+            tabs.forEach(t=>{
+                t.addEventListener('click', ()=> showView(t.dataset.view));
+            });
+
+            // Quick navigation
+            document.getElementById('toUserLogin').addEventListener('click', ()=> showView('user-login'));
+            document.getElementById('toRegister').addEventListener('click', ()=> showView('register'));
+            document.getElementById('backToLogin').addEventListener('click', ()=> showView('user-login'));
+
+            // Demo admin credentials autofill
+            document.getElementById('demoAdminCreds').addEventListener('click', ()=>{
+                document.getElementById('adminEmail').value = 'admin@example.com';
+                document.getElementById('adminPass').value = 'admin123';
+            });
+
+            // Admin login (client-side demo)
+            document.getElementById('admin-login').addEventListener('submit', function(e){
+                e.preventDefault();
+                const email = document.getElementById('adminEmail').value.trim();
+                const pass = document.getElementById('adminPass').value.trim();
+                const msg = document.getElementById('adminMsg');
+
+                // Demo: credentials are fixed
+                if(email.toLowerCase() === 'admin@example.com' && pass === 'admin123'){
+                    msg.textContent = 'Welcome, admin! Redirecting to dashboard...';
+                    msg.className = 'msg ok';
+                    openDashboard({name:'Admin',role:'Administrator',email});
+                } else {
+                    msg.textContent = 'Invalid admin credentials.';
+                    msg.className = 'msg err';
+                }
+            });
+
+            // Register handler (stores user locally)
+            document.getElementById('register').addEventListener('submit', function(e){
+                e.preventDefault();
+                const name = document.getElementById('regName').value.trim();
+                const email = document.getElementById('regEmail').value.trim().toLowerCase();
+                const pass = document.getElementById('regPass').value;
+                const role = document.getElementById('regRole').value;
+                const msg = document.getElementById('regMsg');
+
+                if(!name || !email || !pass){
+                    msg.textContent = 'Please fill in all fields.';
+                    msg.className = 'msg err';
+                    return;
+                }
+
+                // Save to localStorage (demo only)
+                const users = JSON.parse(localStorage.getItem('demo_users')||'[]');
+                if(users.some(u=>u.email===email)){
+                    msg.textContent = 'User already exists. Try signing in.';
+                    msg.className = 'msg err';
+                    showView('user-login');
+                    return;
+                }
+                users.push({name,email,pass,role,created:Date.now()});
+                localStorage.setItem('demo_users', JSON.stringify(users));
+                msg.textContent = 'Account created successfully. You can now sign in.';
+                msg.className = 'msg ok';
+                setTimeout(()=> showView('user-login'), 900);
+            });
+
+            // User login handler
+            document.getElementById('user-login').addEventListener('submit', function(e){
+                e.preventDefault();
+                const email = document.getElementById('userEmail').value.trim().toLowerCase();
+                const pass = document.getElementById('userPass').value;
+                const msg = document.getElementById('userMsg');
+
+                const users = JSON.parse(localStorage.getItem('demo_users')||'[]');
+                const user = users.find(u=>u.email===email && u.pass===pass);
+                if(user){
+                    msg.textContent = 'Signed in. Welcome!';
+                    msg.className = 'msg ok';
+                    // Non-admin users do not open admin dashboard — show greeting overlay for demo
+                    openDashboard({name:user.name,role:user.role,email:user.email}, false);
+                } else {
+                    msg.textContent = 'Invalid email or password.';
+                    msg.className = 'msg err';
+                }
+            });
+
+            // Dashboard open/close
+            function openDashboard(user, admin = true){
+                dashboard.classList.add('show');
+                dashboard.setAttribute('aria-hidden','false');
+                document.getElementById('dashSub').textContent = `${user.name} · ${user.role}`;
+                // If non-admin, keep some admin controls disabled visually (demo)
+                const profileBtn = document.getElementById('profileBtn');
+                profileBtn.textContent = admin ? 'Manage' : 'Profile';
+            }
+
+            document.getElementById('logout').addEventListener('click', ()=>{
+                dashboard.classList.remove('show');
+                dashboard.setAttribute('aria-hidden','true');
+            });
+
+            // small keyboard accessibility: Esc closes dashboard
+            document.addEventListener('keydown', (e)=> {
+                if(e.key==='Escape'){
+                    dashboard.classList.remove('show');
+                    dashboard.setAttribute('aria-hidden','true');
+                }
+            });
+
+            // Preload demo admin credentials hint
+            // Note: For production, replace with secure server-side auth.
+            // Demo admin: admin@example.com / admin123
+
+            // Initial view
+            showView('admin-login');
+
+            // Micro-interaction: subtle hover animation for whole app
+            app.addEventListener('mousemove', (e)=>{
+                const r = app.getBoundingClientRect();
+                const px = (e.clientX - r.left - r.width/2) / r.width;
+                const py = (e.clientY - r.top - r.height/2) / r.height;
+                app.style.transform = `perspective(800px) rotateX(${py*3}deg) rotateY(${px*3}deg)`;
+            });
+            app.addEventListener('mouseleave', ()=> app.style.transform = 'none');
+
+        })();
+    </script>
+</body>
+</html></div></label></div>
