@@ -58,6 +58,9 @@ const str2 ="Niresh";
 const str3 = str2.split('').reverse('').join()//output will be array reverse [ 'h', 's', 'e', 'r', 'i', 'N' ]
 console.log(str3);
 
+const str5 = "AEBDC"
+const str6 = str5.split("").sort().join()
+console.log(str6);
 
 
 
